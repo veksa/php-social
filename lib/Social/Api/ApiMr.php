@@ -84,4 +84,71 @@ class ApiMr extends Api
 
         return md5($params . $this->appSecret);
     }
+    
+    public function sendMultipost($data)
+    {
+        $token = $this->getToken();
+
+        $parameters = [
+            'method' => 'multipost.send',
+            'client_id' => $this->appId,
+            'uids' => $token->getIdentifier(),
+            'secure' => '1',
+            'session_key' => $token->getAccessToken(),
+            'uid2' => $data['uid2']
+        ];
+        
+        if (isset($data['text'])){
+            $parameters['text'] = $data['text'];
+        }
+        if (isset($data['photo'])){
+            $parameters['photo'] = $data['photo'];
+        }
+        if (isset($data['video'])){
+            $parameters['video'] = $data['video'];
+        }
+        if (isset($data['audio'])){
+            $parameters['audio'] = $data['audio'];
+        }
+
+        $parameters['sig'] = $this->generateSig($parameters);
+
+        $body = $this->execGet($this->profileUrl, $parameters);
+        $data = json_decode($body, true);
+        
+        if (isset($data['id'])) {
+            return $data;
+        }
+
+        return false;
+    }
+    
+    public function upload($data)
+    {
+        $token = $this->getToken();
+
+        $parameters = [
+            'method' => 'photos.upload',
+            'client_id' => $this->appId,
+            'uids' => $token->getIdentifier(),
+            'secure' => '1',
+            'session_key' => $token->getAccessToken(),
+            'aid' => $data['uid']
+        ];
+        
+        if (isset($data['img_file'])){
+            $parameters['img_file'] = $data['img_file'];
+        }
+
+        $parameters['sig'] = $this->generateSig($parameters);
+        
+        $body = $this->execPost($this->profileUrl, $parameters);
+        $data = json_decode($body, true);
+        print_r($data); die();
+        if (isset($data['id'])) {
+            return $data;
+        }
+
+        return false;
+    }
 }

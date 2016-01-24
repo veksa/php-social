@@ -30,6 +30,11 @@ abstract class Api
     {
         return HttpClient::exec('GET', $url, $data);
     }
+    
+    protected function execPost($url, array $data = array())
+    {
+        return HttpClient::exec('POST', $url, $data);
+    }
 
     public function getError()
     {

@@ -144,7 +144,7 @@ class ApiMr extends Api
         
         $body = $this->execPost($this->profileUrl, $parameters);
         $data = json_decode($body, true);
-        print_r($data); die();
+        
         if (isset($data['id'])) {
             return $data;
         }

@@ -2,7 +2,7 @@
 
 namespace Social\Api;
 
-
+use Yii;
 use Social\Auth\Token;
 use Social\SexType;
 
@@ -128,16 +128,19 @@ class ApiMr extends Api
         $token = $this->getToken();
 
         $parameters = [
+            'app_id' => $this->appId,
             'method' => 'photos.upload',
-            'client_id' => $this->appId,
-            'uids' => $token->getIdentifier(),
-            'secure' => '1',
-            'session_key' => $token->getAccessToken(),
-            'aid' => $data['uid']
+            'secure' => 1,
+            'aid' => $data['uid'],
+            'uid' => $data['user_id'],
+            'uid2' => $data['group_id']
         ];
         
-        if (isset($data['img_file'])){
-            $parameters['img_file'] = $data['img_file'];
+        if (isset($data['img_url'])){
+            $parameters['img_url'] = $data['img_url'];
+        }
+        if (isset($data['theme'])){
+            $parameters['theme'] = $data['theme'];
         }
 
         $parameters['sig'] = $this->generateSig($parameters);
@@ -145,7 +148,7 @@ class ApiMr extends Api
         $body = $this->execPost($this->profileUrl, $parameters);
         $data = json_decode($body, true);
         
-        if (isset($data['id'])) {
+        if (isset($data['pid'])) {
             return $data;
         }
 
